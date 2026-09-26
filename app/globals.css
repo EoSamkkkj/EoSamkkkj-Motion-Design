@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --header-h: 76px;
+  /* --font-sans e --font-mono vêm do next/font/google (Inter e JetBrains
+     Mono, ambas gratuitas) definidas em app/layout.tsx. --font-display
+     usa a mesma Inter — como a própria SF Pro, títulos e texto corrido
+     são a mesma família, só em tamanhos diferentes. */
+  --font-display: var(--font-sans);
+}
+
+* {
+  scrollbar-color: #00a651 #f0fdf4;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+body {
+  background-color: #ffffff;
+  color: #0f1412;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: #00a651;
+  color: #ffffff;
+}
+
+/* Foco visível e consistente para navegação por teclado */
+:focus-visible {
+  outline: 2px solid #00a651;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Esconde o cursor customizado dos elementos nativos no touch — controlado via media query no CustomCursor */
+@media (hover: none) {
+  .cursor-none-desktop {
+    cursor: auto;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cursor-none-desktop {
+    cursor: none;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+/* Padrão de grid sutil usado no hero e em fundos técnicos */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(15, 20, 18, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 20, 18, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.bg-grid-light {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-dark {
+  background: rgba(15, 20, 18, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Aparece apenas quando um vídeo está com preview tocando, para não somar contraste ao card */
+.video-fade-in {
+  animation: video-fade-in 0.4s ease forwards;
+}
+
+@keyframes video-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Destaque "premium": texto com brilho verde suave, usado nas informações
+   mais importantes dos pacotes (tempo, narração, diferencial). */
+.shine {
+  background-image: linear-gradient(
+    100deg,
+    #007a3e 0%,
+    #00a651 35%,
+    #6fe3a0 50%,
+    #00a651 65%,
+    #007a3e 100%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 4.5s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: -220% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shine {
+    animation: none;
+    background-position: 0 center;
+  }
+}

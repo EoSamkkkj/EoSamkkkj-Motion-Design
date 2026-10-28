@@ -7,12 +7,20 @@ import WhatsAppCTA from "@/components/WhatsAppCTA";
 import MagneticButton from "@/components/MagneticButton";
 import SectionReveal from "@/components/SectionReveal";
 import BackgroundLoop from "@/components/BackgroundLoop";
-import { featuredPortfolio } from "@/data/portfolio";
+import RotatingWord from "@/components/RotatingWord";
+import TimelineStrip from "@/components/TimelineStrip";
+import MovingBackdrop from "@/components/MovingBackdrop";
+import type { PortfolioLevel, PortfolioVideo } from "@/lib/content-types";
 import { createWhatsAppLinkDefault, whatsappMessages } from "@/lib/whatsapp";
 
 const marqueeItems = ["IDEIA", "STORYBOARD", "DESIGN", "MOTION", "RESULTADO"];
 
-export default function HomeSection() {
+interface HomeSectionProps {
+  levels: PortfolioLevel[];
+  featured: PortfolioVideo[];
+}
+
+export default function HomeSection({ levels, featured }: HomeSectionProps) {
   return (
     <SectionReveal id="inicio">
       {/* HERO */}
@@ -33,7 +41,11 @@ export default function HomeSection() {
             >
               Transformo ideias
               <br />
-              em <span className="text-green">movimento.</span>
+              em{" "}
+              <RotatingWord
+                words={["movimento.", "animação.", "criativos.", "resultado."]}
+                className="text-green"
+              />
             </RevealText>
             <RevealText
               as="p"
@@ -70,6 +82,8 @@ export default function HomeSection() {
             <FloatingShape />
           </RevealText>
         </div>
+
+        <TimelineStrip />
       </div>
 
       {/* MARQUEE */}
@@ -92,37 +106,40 @@ export default function HomeSection() {
       </div>
 
       {/* MEUS TRABALHOS */}
-      <div className="mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
-        <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end">
-          <SectionHeading
-            eyebrow="Meus trabalhos"
-            headline={
-              <>
-                Movimento é melhor
-                <br />
-                quando você vê.
-              </>
-            }
-            text="Uma seleção de projetos, animações e experimentos desenvolvidos ao longo do meu trabalho com Motion Design."
-          />
-        </div>
+      <div className="relative">
+        <MovingBackdrop variant="grid" />
+        <div className="relative mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
+          <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end">
+            <SectionHeading
+              eyebrow="Meus trabalhos"
+              headline={
+                <>
+                  Movimento é melhor
+                  <br />
+                  quando você vê.
+                </>
+              }
+              text="Uma seleção de projetos, animações e experimentos desenvolvidos ao longo do meu trabalho com Motion Design."
+            />
+          </div>
 
-        <div className="mt-12">
-          <PortfolioGrid items={featuredPortfolio} />
-        </div>
+          <div className="mt-12">
+            <PortfolioGrid items={featured} levels={levels} />
+          </div>
 
-        <RevealText className="mt-12 flex justify-center">
-          <MagneticButton>
-            <a
-              href="#projetos"
-              data-cursor="Ver tudo"
-              className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-white transition-colors hover:bg-graphite"
-            >
-              Ver portfólio completo
-              <ArrowUpRight size={16} />
-            </a>
-          </MagneticButton>
-        </RevealText>
+          <RevealText className="mt-12 flex justify-center">
+            <MagneticButton>
+              <a
+                href="#projetos"
+                data-cursor="Ver tudo"
+                className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-white transition-colors hover:bg-graphite"
+              >
+                Ver portfólio completo
+                <ArrowUpRight size={16} />
+              </a>
+            </MagneticButton>
+          </RevealText>
+        </div>
       </div>
     </SectionReveal>
   );

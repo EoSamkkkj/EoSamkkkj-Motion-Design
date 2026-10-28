@@ -3,15 +3,16 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import { getVimeoId, vimeoPlayerSrc } from "@/lib/vimeo";
-import { levelLabels, type PortfolioVideo } from "@/data/portfolio";
+import { parseVideo, videoPlayerEmbed } from "@/lib/video";
+import type { PortfolioVideo } from "@/lib/content-types";
 
 interface VideoModalProps {
   video: PortfolioVideo | null;
+  levelLabel: string;
   onClose: () => void;
 }
 
-export default function VideoModal({ video, onClose }: VideoModalProps) {
+export default function VideoModal({ video, levelLabel, onClose }: VideoModalProps) {
   useEffect(() => {
     if (!video) return;
     document.body.style.overflow = "hidden";
@@ -25,9 +26,12 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
     };
   }, [video, onClose]);
 
+  const src = video ? parseVideo(video.videoUrl) : null;
+  const embed = src ? videoPlayerEmbed(src) : null;
+
   return (
     <AnimatePresence>
-      {video && (
+      {video && src && (
         <motion.div
           role="dialog"
           aria-modal="true"
@@ -40,35 +44,41 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
           onClick={onClose}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9, y: 30, rotateX: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ type: "spring", stiffness: 260, damping: 22 }}
             onClick={(e) => e.stopPropagation()}
             className="relative w-full max-w-4xl"
           >
             <div className="mb-3 flex items-center justify-between text-white/80">
               <span className="font-mono text-xs uppercase tracking-widest">
-                {levelLabels[video.level]} · {video.category}
+                {levelLabel} · {video.category}
               </span>
-              <button
+              <motion.button
                 type="button"
                 onClick={onClose}
                 aria-label="Fechar vídeo"
                 data-cursor="Fechar"
+                whileHover={{ rotate: 90, scale: 1.1 }}
+                whileTap={{ scale: 0.85 }}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-green hover:text-green"
               >
                 <X size={18} />
-              </button>
+              </motion.button>
             </div>
             <div className="aspect-video w-full overflow-hidden rounded-xl bg-black shadow-2xl">
-              <iframe
-                src={vimeoPlayerSrc(getVimeoId(video.videoUrl))}
-                title={`Projeto ${video.category}`}
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                className="h-full w-full"
-              />
+              {embed ? (
+                <iframe
+                  src={embed}
+                  title={`Projeto ${video.category}`}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  className="h-full w-full"
+                />
+              ) : src.kind === "file" ? (
+                <video src={src.url} controls autoPlay playsInline className="h-full w-full bg-black object-contain" />
+              ) : null}
             </div>
           </motion.div>
         </motion.div>

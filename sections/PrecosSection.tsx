@@ -7,10 +7,16 @@ import WhatsAppCTA from "@/components/WhatsAppCTA";
 import RevealText from "@/components/RevealText";
 import SectionReveal from "@/components/SectionReveal";
 import BackgroundLoop from "@/components/BackgroundLoop";
-import { pricePlans, faqItems } from "@/data/prices";
+import MovingBackdrop from "@/components/MovingBackdrop";
+import type { FaqItem, PricePlan } from "@/lib/content-types";
 import { createWhatsAppLinkDefault, whatsappMessages } from "@/lib/whatsapp";
 
-export default function PrecosSection() {
+interface PrecosSectionProps {
+  plans: PricePlan[];
+  faq: FaqItem[];
+}
+
+export default function PrecosSection({ plans, faq }: PrecosSectionProps) {
   return (
     <SectionReveal id="precos">
       <div className="relative px-6 pb-12 pt-20 sm:px-8 sm:pt-28 lg:px-12">
@@ -32,15 +38,16 @@ export default function PrecosSection() {
 
       <div className="mx-auto max-w-content px-6 pb-20 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
-          {pricePlans.map((plan, i) => (
+          {plans.map((plan, i) => (
             <PriceCard key={plan.id} plan={plan} delay={i * 0.08} />
           ))}
-          <ProposalCard delay={pricePlans.length * 0.08} />
+          <ProposalCard delay={plans.length * 0.08} />
         </div>
       </div>
 
-      <div className="border-t border-ink/10 bg-cloud">
-        <div className="mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <div className="relative overflow-hidden border-t border-ink/10 bg-cloud">
+        <MovingBackdrop variant="grid" />
+        <div className="relative mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
           <SectionHeading
             eyebrow="Personalizado"
             headline={
@@ -61,7 +68,7 @@ export default function PrecosSection() {
       <div className="mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
         <SectionHeading eyebrow="Dúvidas" headline="Perguntas frequentes." />
         <div className="mt-12 flex max-w-2xl flex-col divide-y divide-ink/10 border-y border-ink/10">
-          {faqItems.map((item, i) => (
+          {faq.map((item, i) => (
             <RevealText key={item.question} delay={i * 0.04} as="details" className="group py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-base font-medium tracking-tight text-ink sm:text-lg">
                 {item.question}
@@ -78,8 +85,9 @@ export default function PrecosSection() {
         </div>
       </div>
 
-      <div className="bg-ink">
-        <div className="mx-auto flex max-w-content flex-col items-center gap-7 px-6 py-20 text-center sm:px-8 sm:py-28 lg:px-12">
+      <div className="relative overflow-hidden bg-ink">
+        <MovingBackdrop variant="aurora" />
+        <div className="relative mx-auto flex max-w-content flex-col items-center gap-7 px-6 py-20 text-center sm:px-8 sm:py-28 lg:px-12">
           <SectionHeading
             align="center"
             tone="light"

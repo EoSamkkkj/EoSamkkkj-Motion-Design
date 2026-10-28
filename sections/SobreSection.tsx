@@ -6,6 +6,7 @@ import ProcessTimeline from "@/components/ProcessTimeline";
 import ToolCard from "@/components/ToolCard";
 import SectionReveal from "@/components/SectionReveal";
 import BackgroundLoop from "@/components/BackgroundLoop";
+import MovingBackdrop from "@/components/MovingBackdrop";
 import { tools } from "@/data/tools";
 import { siteConfig } from "@/config/site";
 import fs from "node:fs";
@@ -86,10 +87,11 @@ export default function SobreSection() {
         </div>
       </div>
 
-      <div className="border-y border-ink/10 bg-ink py-16 sm:py-24">
+      <div className="relative overflow-hidden border-y border-ink/10 bg-ink py-16 sm:py-24">
+        <MovingBackdrop variant="aurora" />
         <RevealText
           as="p"
-          className="mx-auto max-w-4xl px-6 text-balance text-center font-display text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl"
+          className="relative mx-auto max-w-4xl px-6 text-balance text-center font-display text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl"
         >
           Do primeiro frame ao último,
           <br />
@@ -113,8 +115,9 @@ export default function SobreSection() {
         </div>
       </div>
 
-      <div className="border-t border-ink/10 bg-cloud">
-        <div className="mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <div className="relative overflow-hidden border-t border-ink/10 bg-cloud">
+        <MovingBackdrop variant="dots" />
+        <div className="relative mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28 lg:px-12">
           <SectionHeading eyebrow="Ferramentas" headline="Como eu trabalho." />
 
           <div className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-3">

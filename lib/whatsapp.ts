@@ -8,6 +8,11 @@ export function createWhatsAppLink(phone: string, message: string): string {
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
+/** Mensagem padrão de um pacote, quando o painel deixa o campo vazio. */
+export function planMessage(name: string, price: string): string {
+  return `Olá, Sam! Vi seu portfólio e tenho interesse no pacote ${name}${price ? ` de ${price}` : ""}. Gostaria de conversar sobre meu projeto.`;
+}
+
 /**
  * Atalho usando o número oficial configurado em config/site.ts.
  */
@@ -18,12 +23,6 @@ export function createWhatsAppLinkDefault(message: string): string {
 export const whatsappMessages = {
   geral:
     "Olá, Sam! Vi seu portfólio e gostaria de conversar sobre um projeto de Motion Design.",
-  basico:
-    "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Básico de R$250. Gostaria de conversar sobre meu projeto.",
-  intermediario:
-    "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Intermediário de R$350 a R$450. Gostaria de conversar sobre meu projeto.",
-  exclusivo:
-    "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Exclusivo de R$750. Gostaria de conversar sobre meu projeto.",
 };
 
 export interface CustomProjectRequest {

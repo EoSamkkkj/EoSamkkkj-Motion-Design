@@ -2,21 +2,16 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import CustomCursor from "@/components/CustomCursor";
-import AmbientBackground from "@/components/AmbientBackground";
-import MotionProvider from "@/components/MotionProvider";
 
-// Inter: fonte gratuita (licença OFL) com métricas e personalidade muito
-// próximas da SF Pro da Apple — a substituta mais usada do mercado para
-// quem não pode distribuir a SF Pro (que não tem licença para uso web).
-// Usada tanto para títulos quanto para texto corrido, como a própria SF
-// Pro faz (Display e Text são a mesma família, só tamanhos ópticos).
+// Fonte principal: SF Pro. Ela já vem instalada em iPhone, iPad e Mac (e em
+// computadores onde o Sam instalou), então o navegador usa a original —
+// a licença da Apple não permite hospedar o arquivo no site. Onde ela não
+// existe (Android/Windows), entra a Inter, a alternativa mais parecida.
+// A pilha completa fica em --font-sans, no app/globals.css.
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const mono = JetBrains_Mono({
@@ -69,23 +64,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${mono.variable}`}>
-      <body className="cursor-none-desktop">
-        <a
-          href="#conteudo"
-          className="fixed left-2 top-2 z-[200] -translate-y-24 rounded-md bg-ink px-4 py-2 text-sm text-white transition-transform focus-visible:translate-y-0"
-        >
-          Pular para o conteúdo
-        </a>
-        <MotionProvider>
-          <CustomCursor />
-          <AmbientBackground />
-          <Header />
-          <main id="conteudo" className="relative">
-            {children}
-          </main>
-          <Footer />
-        </MotionProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

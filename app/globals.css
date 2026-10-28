@@ -4,10 +4,12 @@
 
 :root {
   --header-h: 76px;
-  /* --font-sans e --font-mono vêm do next/font/google (Inter e JetBrains
-     Mono, ambas gratuitas) definidas em app/layout.tsx. --font-display
-     usa a mesma Inter — como a própria SF Pro, títulos e texto corrido
-     são a mesma família, só em tamanhos diferentes. */
+  /* SF Pro primeiro: é a fonte do sistema em iPhone/iPad/Mac (e o
+     navegador também acha se ela estiver instalada no Windows). Onde não
+     existe, cai na Inter (--font-inter, carregada em app/layout.tsx), a
+     alternativa mais parecida. --font-mono é a JetBrains Mono. */
+  --font-sans: "SF Pro Display", "SF Pro Text", "SF Pro", -apple-system, BlinkMacSystemFont,
+    var(--font-inter), "Segoe UI", system-ui, sans-serif;
   --font-display: var(--font-sans);
 }
 
@@ -41,7 +43,7 @@ body {
 body {
   background-color: #ffffff;
   color: #0f1412;
-  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -72,7 +74,8 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 .font-mono {
@@ -154,5 +157,307 @@ body {
   .shine {
     animation: none;
     background-position: 0 center;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Interações e movimento contínuo
+   ------------------------------------------------------------------ */
+
+/* Rastro de keyframes (losangos do After Effects) — components/PointerFx */
+.kf {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 130;
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  background: var(--c);
+  border-radius: 2px;
+  pointer-events: none;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--c) 60%, transparent);
+  animation: kf var(--d) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes kf {
+  0% {
+    transform: translate(var(--x), var(--y)) rotate(45deg) scale(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(var(--x), var(--y)) rotate(45deg) scale(1);
+  }
+  100% {
+    transform: translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy))) rotate(225deg) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.kf-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 130;
+  width: 70px;
+  height: 70px;
+  margin: -35px 0 0 -35px;
+  border: 2px solid #00a651;
+  border-radius: 9999px;
+  pointer-events: none;
+  animation: kf-ring 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes kf-ring {
+  from {
+    transform: translate(var(--x), var(--y)) scale(0.1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--x), var(--y)) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* Cards que inclinam em 3D — components/Tilt */
+.tilt {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.tilt[data-tilting] {
+  transition: transform 0.08s linear;
+}
+
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(360px circle at var(--mx) var(--my), rgba(111, 227, 160, 0.22), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  mix-blend-mode: screen;
+}
+
+.tilt[data-tilting] .tilt-glare {
+  opacity: 1;
+}
+
+/* Botão de play dos vídeos pulsando */
+.play-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: play-pulse 2.2s ease-out infinite;
+}
+
+@keyframes play-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+/* Selo "Mais escolhido" balançando de leve */
+.badge-bob {
+  animation: badge-bob 2.6s ease-in-out infinite;
+}
+
+@keyframes badge-bob {
+  50% {
+    transform: translateY(-4px) rotate(-2deg);
+  }
+}
+
+/* Borda girando no pacote em destaque */
+.price-glow {
+  isolation: isolate;
+}
+
+.price-glow::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(from var(--angle, 0deg), #00a651, transparent 30%, transparent 70%, #6fe3a0);
+  animation: spin-angle 5s linear infinite;
+}
+
+.price-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: #0f1412;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-angle {
+  to {
+    --angle: 360deg;
+  }
+}
+
+/* Fundos que nunca param */
+.bg-dots-move {
+  background-image: radial-gradient(rgba(0, 166, 81, 0.22) 1.4px, transparent 1.6px);
+  background-size: 28px 28px;
+  animation: dots-move 22s linear infinite;
+  mask-image: radial-gradient(ellipse at 50% 40%, black 25%, transparent 75%);
+}
+
+@keyframes dots-move {
+  to {
+    background-position: 280px 140px;
+  }
+}
+
+.bg-grid-move {
+  animation: grid-move 16s linear infinite;
+}
+
+@keyframes grid-move {
+  to {
+    background-position: 40px 40px;
+  }
+}
+
+.aurora {
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(closest-side at 30% 35%, rgba(0, 166, 81, 0.45), transparent),
+    radial-gradient(closest-side at 70% 60%, rgba(111, 227, 160, 0.3), transparent),
+    radial-gradient(closest-side at 45% 85%, rgba(0, 95, 49, 0.5), transparent);
+  filter: blur(40px);
+  animation: spin 34s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.twinkle {
+  animation: twinkle var(--t, 3s) ease-in-out infinite;
+  animation-delay: var(--dl, 0s);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.6) rotate(45deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(45deg);
+  }
+}
+
+/* Painel */
+.admin-orb {
+  animation: admin-orb 9s ease-in-out infinite alternate;
+}
+
+@keyframes admin-orb {
+  to {
+    transform: translate(-40%, -60%) scale(1.15);
+  }
+}
+
+.publish-shine {
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: publish-shine 2.4s linear infinite;
+}
+
+@keyframes publish-shine {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt {
+    transform: none !important;
+  }
+}
+
+/* Timeline decorativa do início — components/TimelineStrip */
+.playhead {
+  animation: playhead linear infinite;
+}
+
+@keyframes playhead {
+  from {
+    left: 0%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+.kf-key {
+  animation: kf-flash 8s linear infinite;
+}
+
+@keyframes kf-flash {
+  0%,
+  4% {
+    box-shadow: 0 0 0 4px rgba(0, 166, 81, 0.35), 0 0 14px #00a651;
+    filter: brightness(1.4);
+  }
+  10%,
+  100% {
+    box-shadow: none;
+    filter: none;
+  }
+}
+
+/* Etapas do processo: anel pulsando em sequência, uma etapa por vez */
+.step-dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  border: 2px solid #00a651;
+  animation: step-ring 3s ease-out infinite;
+  animation-delay: var(--dl, 0s);
+}
+
+@keyframes step-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  40%,
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
   }
 }

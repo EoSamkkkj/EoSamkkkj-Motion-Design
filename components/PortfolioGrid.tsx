@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 import { createWhatsAppLinkDefault, whatsappMessages } from "@/lib/whatsapp";
-import type { PortfolioVideo } from "@/data/portfolio";
+import type { PortfolioLevel, PortfolioVideo } from "@/lib/content-types";
 import VideoCard from "./VideoCard";
 import VideoModal from "./VideoModal";
 
 interface PortfolioGridProps {
   items: PortfolioVideo[];
+  levels: PortfolioLevel[];
 }
 
-export default function PortfolioGrid({ items }: PortfolioGridProps) {
-  const [activeId, setActiveId] = useState<number | null>(null);
+export default function PortfolioGrid({ items, levels }: PortfolioGridProps) {
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [selected, setSelected] = useState<PortfolioVideo | null>(null);
+  const labelOf = (id: string) => levels.find((l) => l.id === id)?.label ?? id;
 
   if (items.length === 0) {
     return (
@@ -39,6 +41,7 @@ export default function PortfolioGrid({ items }: PortfolioGridProps) {
           <VideoCard
             key={video.id}
             video={video}
+            levelLabel={labelOf(video.level)}
             isActive={activeId === video.id}
             onHoverStart={() => setActiveId(video.id)}
             onHoverEnd={() => setActiveId((cur) => (cur === video.id ? null : cur))}
@@ -46,7 +49,11 @@ export default function PortfolioGrid({ items }: PortfolioGridProps) {
           />
         ))}
       </div>
-      <VideoModal video={selected} onClose={() => setSelected(null)} />
+      <VideoModal
+        video={selected}
+        levelLabel={selected ? labelOf(selected.level) : ""}
+        onClose={() => setSelected(null)}
+      />
     </>
   );
 }

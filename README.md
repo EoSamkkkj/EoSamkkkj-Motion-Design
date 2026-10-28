@@ -43,27 +43,40 @@ Praticamente tudo que muda com frequência fica em `config/` e `data/` — não 
 - Nome, título e descrição usados no `<title>` e no SEO.
 - `nav`: os itens do menu — cada um aponta para o `id` da seção correspondente (`#inicio`, `#projetos`, `#sobre`, `#precos`). Só mude aqui se quiser renomear um item do menu.
 
-### `data/portfolio.ts`
-Cada vídeo do portfólio é um objeto simples:
+### Painel (`/admin`) — vídeos, seções, preços e perguntas
 
-```ts
-{
-  id: 7,                    // único, sequencial
-  level: "basico",          // "basico" | "intermediario" | "exclusivo"
-  category: "Motion Design",// aparece como etiqueta no card
-  videoUrl: "https://vimeo.com/SEU_ID",
-  duration: "0:28",         // opcional
-}
-```
+Tudo que muda com frequência é editado pelo painel, sem mexer em código:
+abra `https://SEU-SITE/admin`, entre com a senha e use as abas:
 
-Basta copiar um bloco, trocar o `id`, o `level` e o `videoUrl`. A capa (thumbnail) e o preview em vídeo são gerados automaticamente a partir do link do Vimeo — não precisa subir imagem nenhuma.
+- **Vídeos:** adicionar vídeo (colando link do Vimeo/YouTube ou enviando o
+  arquivo MP4/MOV/WEBM direto), escolher a seção, categoria, duração e se
+  aparece no início; criar, renomear, reordenar e apagar seções do
+  portfólio (Básico, Intermediário, ou qualquer nova).
+- **Preços:** criar, duplicar, editar, reordenar e apagar pacotes; destacar
+  um pacote e colocar selo ("Mais escolhido", "Novo"...). Se a mensagem do
+  WhatsApp ficar vazia, ela é gerada com o nome e o preço do pacote.
+- **Perguntas:** o FAQ da seção Preços.
 
-`featuredPortfolio` (mostrado na seção Início) pega os 6 primeiros itens da lista. Se quiser controlar manualmente quais aparecem ali, edite essa constante no fim do arquivo.
+Clique em **Publicar** e o site atualiza na hora (sem novo deploy).
+
+O conteúdo publicado fica no **Vercel Blob** (pasta `site-content/`, com as
+10 últimas versões como histórico) e os vídeos enviados em `portfolio/`. O
+conteúdo inicial, usado antes da primeira publicação, está em
+`lib/content-defaults.ts`.
+
+**Configuração (uma vez só, no Vercel → projeto):**
+1. **Storage → Create Database → Blob** e conectar ao projeto (isso cria a
+   variável `BLOB_READ_WRITE_TOKEN` sozinho).
+2. **Settings → Environment Variables:** criar `ADMIN_PASSWORD` com a senha do
+   painel. (Opcional: `ADMIN_SESSION_SECRET` com um texto aleatório longo.)
+3. Fazer um novo deploy (Deployments → ⋯ → Redeploy).
+
+Para testar o painel no computador, crie um arquivo `.env.local` com
+`ADMIN_PASSWORD=uma-senha-de-teste` (ele não vai para o GitHub).
 
 ### `data/prices.ts`
-Valores, prazos, número de alterações e as mensagens de WhatsApp de cada pacote. As opções do configurador "Monte seu projeto" (duração, nível, narração, efeitos) e as perguntas do FAQ também estão aqui.
-
-Na seção de Preços, além dos três pacotes fixos, há um quarto card ("Personalizado — Você define o valor") onde o próprio visitante escreve o valor que gostaria de investir e uma mensagem, e isso vai direto para o WhatsApp — sem nenhum cálculo automático, é só um encaminhamento do que a pessoa digitou.
+Só as opções do configurador "Monte seu projeto" (duração, nível, narração,
+efeitos). Pacotes e FAQ agora ficam no painel.
 
 ### `data/tools.ts`
 As três ferramentas exibidas em "Sobre mim" (Figma, After Effects, Premiere Pro) e as cinco etapas do processo.
@@ -73,7 +86,6 @@ As três ferramentas exibidas em "Sobre mim" (Figma, After Effects, Premiere Pro
 O site já funciona sem eles (com placeholders elegantes), mas fica mais completo quando você adicionar:
 
 - **Foto do Sam:** salve em `public/images/sam.webp`. A seção "Sobre mim" detecta automaticamente se o arquivo existe; enquanto não existir, mostra a sua logo em destaque no lugar da foto.
-- **Vídeos do nível Básico:** adicione objetos com `level: "basico"` em `data/portfolio.ts` assim que tiver exemplos prontos.
 - **Logo em vetor (opcional):** hoje `public/logo/logo.png` e `public/logo/logo-white.png` são PNGs extraídos da arte que você enviou. Se um dia tiver os arquivos `.svg` originais, é só substituir os PNGs pelos SVGs com o mesmo nome — nenhum componente precisa mudar.
 
 ## Estrutura
@@ -107,5 +119,6 @@ public/
 - GIFs de fundo: as seções Início, Sobre e Preços também têm um GIF seu tocando em loop bem discreto atrás do conteúdo (opacidade baixa, com um filtro de cor que puxa pro verde da marca) — é o `components/BackgroundLoop.tsx`, e os arquivos ficam em `public/backgrounds/`. Para trocar qual GIF aparece em cada seção, basta substituir o arquivo correspondente (`bg-inicio.gif`, `bg-sobre.gif`, `bg-precos.gif`) mantendo o mesmo nome, ou apontar para outro arquivo no `src` do `<BackgroundLoop />` dentro de cada seção em `sections/`. Deixei de fora a seção Projetos de propósito, já que ela já é bem cheia visualmente (vídeos, thumbnails, filtros). Um detalhe técnico: como é um GIF (não CSS), a configuração "reduzir movimento" do sistema não consegue pausá-lo — se isso for uma preocupação, a alternativa é converter para vídeo (`.webm`/`.mp4`) mudo, que já respeitaria essa preferência.
 - Destaque "premium": os dados mais importantes de cada pacote (duração, prazo e a descrição do que o diferencia) e a narração usam a classe `.shine`, definida em `app/globals.css` — um texto em degradê verde com um brilho suave e contínuo. Para ajustar a velocidade do brilho, mude a duração da animação `shine` nesse arquivo.
 - Acessibilidade: navegação por teclado, foco visível, `aria-label`s nos botões de ícone, ESC fecha o modal de vídeo e o menu mobile, e todo o site respeita `prefers-reduced-motion` (inclusive as transições de seção, o menu e o brilho premium são simplificados automaticamente nesse caso).
-- Tipografia: o site usa a Inter (títulos e texto corrido) e a JetBrains Mono (rótulos técnicos, tipo os "timecodes"), as duas gratuitas e carregadas via Google Fonts em `app/layout.tsx`. A Inter foi escolhida por ser a alternativa gratuita mais próxima da SF Pro da Apple — que não pode ser distribuída em sites por licença.
+- Tipografia: a fonte principal é a SF Pro — o navegador usa a do próprio aparelho (iPhone, iPad, Mac, ou computador onde ela estiver instalada), já que a licença da Apple não permite hospedar o arquivo. Onde ela não existe, entra a Inter (carregada via Google Fonts em `app/layout.tsx`), a alternativa mais parecida. A JetBrains Mono fica nos rótulos técnicos, tipo os "timecodes".
+- Interações: rastro de keyframes (losangos do After Effects) seguindo o mouse/dedo e explosão a cada clique (`components/PointerFx.tsx`), cards de vídeo e preço que inclinam em 3D (`components/Tilt.tsx`), palavra do título trocando com animação (`components/RotatingWord.tsx`), timeline estilo After Effects com playhead e timecode (`components/TimelineStrip.tsx`), ícones das ferramentas e etapas do processo que reagem ao clique, barra de progresso de rolagem no topo, e fundos em movimento em todas as seções (`components/MovingBackdrop.tsx`). Tudo respeita "reduzir movimento".
 - Paleta e fontes seguem exatamente o briefing: verde `#00A651` como cor de destaque (~15% da interface), preto/cinza para contraste (~10%) e o restante em branco/off-white — com pequenas variações de tom entre as seções (Projetos, por exemplo, ganhou um fundo levemente acinzentado) para reforçar a sensação de "nova seção" ao rolar.

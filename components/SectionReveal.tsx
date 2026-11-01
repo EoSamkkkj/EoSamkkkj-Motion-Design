@@ -7,11 +7,22 @@ export default function SectionReveal({
   id,
   children,
   className = "",
+  immediate = false,
 }: {
   id: string;
   children: ReactNode;
   className?: string;
+  /** primeira dobra: aparece já no carregamento, sem esperar o JavaScript */
+  immediate?: boolean;
 }) {
+  if (immediate) {
+    return (
+      <section id={id} className={`scroll-mt-[76px] ${className}`}>
+        {children}
+      </section>
+    );
+  }
+
   return (
     <motion.section
       id={id}

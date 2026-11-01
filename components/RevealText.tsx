@@ -9,6 +9,11 @@ interface RevealTextProps {
   className?: string;
   delay?: number;
   once?: boolean;
+  /**
+   * Anima por CSS assim que a página pinta, sem esperar o JavaScript
+   * carregar — para o topo do site nunca abrir em branco.
+   */
+  onLoad?: boolean;
 }
 
 /**
@@ -28,11 +33,20 @@ export default function RevealText({
   className,
   delay = 0,
   once = true,
+  onLoad = false,
 }: RevealTextProps) {
   const MotionTag = useMemo(
     () => motion.create(Tag as ElementType) as ElementType,
     [Tag]
   );
+
+  if (onLoad) {
+    return (
+      <Tag className={`rise-in ${className ?? ""}`} style={{ animationDelay: `${delay * 1.6}s` }}>
+        {children}
+      </Tag>
+    );
+  }
 
   return (
     <MotionTag

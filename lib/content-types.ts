@@ -20,6 +20,16 @@ export interface PortfolioVideo {
   duration?: string;
   /** aparece na seção "Meus trabalhos" do início */
   featured?: boolean;
+  /** lido do Vimeo/YouTube na hora de montar o site; não é salvo */
+  meta?: VideoMeta;
+}
+
+export interface VideoMeta {
+  title?: string;
+  thumbnail?: string;
+  /** largura ÷ altura (9:16 = 0.5625) */
+  ratio?: number;
+  duration?: string;
 }
 
 export interface PricePlan {

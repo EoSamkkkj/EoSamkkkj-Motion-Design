@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { upload } from "@vercel/blob/client";
 import {
@@ -25,7 +25,23 @@ interface Props {
 
 function Thumb({ url }: { url: string }) {
   const src = parseVideo(url);
-  const thumb = videoThumbnail(src);
+  const [vimeoThumb, setVimeoThumb] = useState<string | null>(null);
+  const thumb = videoThumbnail(src) ?? vimeoThumb;
+  const vimeoId = src.kind === "vimeo" ? src.id : null;
+
+  // a capa do Vimeo vem do oEmbed (o Vimeo libera essa chamada pelo navegador)
+  useEffect(() => {
+    setVimeoThumb(null);
+    if (!vimeoId) return;
+    let alive = true;
+    fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(`https://vimeo.com/${vimeoId}`)}&width=320`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => alive && d?.thumbnail_url && setVimeoThumb(d.thumbnail_url))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [vimeoId]);
   return (
     <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-ink">
       {thumb ? (

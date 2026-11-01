@@ -16,9 +16,12 @@ export function parseVideo(url: string): VideoSource {
   return { kind: "file", url };
 }
 
-/** Capa estática; null para arquivos (o próprio <video> mostra o 1º frame). */
+/**
+ * Capa estática que dá pra montar só com o link. Vimeo não tem uma URL
+ * fixa: a capa vem do oEmbed (lib/video-meta no site). Arquivos usam o
+ * 1º frame do próprio <video>.
+ */
 export function videoThumbnail(src: VideoSource): string | null {
-  if (src.kind === "vimeo") return `https://vumbnail.com/${src.id}.jpg`;
   if (src.kind === "youtube") return `https://i.ytimg.com/vi/${src.id}/hqdefault.jpg`;
   return null;
 }

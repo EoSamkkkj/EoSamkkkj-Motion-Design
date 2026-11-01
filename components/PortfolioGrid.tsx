@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { createWhatsAppLinkDefault, whatsappMessages } from "@/lib/whatsapp";
 import type { PortfolioLevel, PortfolioVideo } from "@/lib/content-types";
 import VideoCard from "./VideoCard";
@@ -13,8 +13,17 @@ interface PortfolioGridProps {
 
 export default function PortfolioGrid({ items, levels }: PortfolioGridProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [selected, setSelected] = useState<PortfolioVideo | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const labelOf = (id: string) => levels.find((l) => l.id === id)?.label ?? id;
+  const selected = selectedIndex === null ? null : items[selectedIndex] ?? null;
+  const step = useCallback(
+    (by: number) =>
+      setSelectedIndex((i) => (i === null ? i : (i + by + items.length) % items.length)),
+    [items.length]
+  );
+  const prev = useCallback(() => step(-1), [step]);
+  const next = useCallback(() => step(1), [step]);
+  const close = useCallback(() => setSelectedIndex(null), []);
 
   if (items.length === 0) {
     return (
@@ -36,8 +45,8 @@ export default function PortfolioGrid({ items, levels }: PortfolioGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((video) => (
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+        {items.map((video, i) => (
           <VideoCard
             key={video.id}
             video={video}
@@ -45,14 +54,18 @@ export default function PortfolioGrid({ items, levels }: PortfolioGridProps) {
             isActive={activeId === video.id}
             onHoverStart={() => setActiveId(video.id)}
             onHoverEnd={() => setActiveId((cur) => (cur === video.id ? null : cur))}
-            onOpen={() => setSelected(video)}
+            onOpen={() => setSelectedIndex(i)}
           />
         ))}
       </div>
       <VideoModal
         video={selected}
         levelLabel={selected ? labelOf(selected.level) : ""}
-        onClose={() => setSelected(null)}
+        index={selectedIndex ?? 0}
+        total={items.length}
+        onPrev={prev}
+        onNext={next}
+        onClose={close}
       />
     </>
   );

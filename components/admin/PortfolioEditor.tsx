@@ -110,7 +110,7 @@ export default function PortfolioEditor({ content, onChange, storageReady }: Pro
 
       <Card
         title="Seções do portfólio"
-        subtitle="São os filtros do portfólio (Básico, Intermediário...). Crie quantas quiser."
+        subtitle="São os filtros do portfólio (Essencial, Intermediário...). Crie quantas quiser."
       >
         <div className="flex flex-col gap-2">
           <AnimatePresence initial={false}>

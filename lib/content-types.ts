@@ -58,7 +58,7 @@ export interface FaqItem {
 }
 
 export interface SiteContent {
-  version: 2;
+  version: 3;
   levels: PortfolioLevel[];
   videos: PortfolioVideo[];
   plans: PricePlan[];

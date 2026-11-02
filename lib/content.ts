@@ -46,7 +46,7 @@ const V1_RENAMES: Record<string, Record<string, [string, string]>> = {
  * campos que ainda estão com o texto original, para não desfazer edições.
  */
 function upgradeFromV1(r: Record<string, unknown>): Record<string, unknown> {
-  if (r.version === 2) return r;
+  if (typeof r.version === "number" && r.version >= 2) return r;
   const arr = (v: unknown) => (Array.isArray(v) ? (v as Record<string, unknown>[]) : []);
   const levels = arr(r.levels);
   const videos = arr(r.videos);
@@ -75,9 +75,20 @@ function upgradeFromV1(r: Record<string, unknown>): Record<string, unknown> {
   };
 }
 
+/** Versão 3: o filtro "Básico" do portfólio passa a se chamar "Essencial", como o pacote. */
+function upgradeFromV2(r: Record<string, unknown>): Record<string, unknown> {
+  if (typeof r.version === "number" && r.version >= 3) return r;
+  const levels = Array.isArray(r.levels) ? (r.levels as Record<string, unknown>[]) : [];
+  return {
+    ...r,
+    version: 3,
+    levels: levels.map((l) => (l?.id === "basico" && l.label === "Básico" ? { ...l, label: "Essencial" } : l)),
+  };
+}
+
 /** Garante o formato esperado e descarta qualquer campo estranho. */
 export function normalizeContent(raw: unknown): SiteContent {
-  const r = upgradeFromV1((raw ?? {}) as Record<string, unknown>);
+  const r = upgradeFromV2(upgradeFromV1((raw ?? {}) as Record<string, unknown>));
   const arr = (v: unknown) => (Array.isArray(v) ? v : []);
 
   const levels: PortfolioLevel[] = arr(r.levels)
@@ -120,7 +131,7 @@ export function normalizeContent(raw: unknown): SiteContent {
     .filter((f) => f.question && f.answer);
 
   return {
-    version: 2,
+    version: 3,
     levels: levels.length ? levels : defaultContent.levels,
     videos,
     plans,
@@ -153,7 +164,7 @@ export async function getContentFresh(): Promise<SiteContent> {
 
 /** Versão em cache para o site público; renovada a cada publicação. */
 // a versão na chave faz um deploy com formato novo não reaproveitar o cache antigo
-export const getContent = unstable_cache(getContentFresh, [TAG, "v2"], { tags: [TAG] });
+export const getContent = unstable_cache(getContentFresh, [TAG, "v3"], { tags: [TAG] });
 
 export async function saveContent(content: SiteContent): Promise<SiteContent> {
   if (!storageEnabled()) {

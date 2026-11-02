@@ -35,10 +35,10 @@ export const expressPlan: PricePlan = {
 };
 
 export const defaultContent: SiteContent = {
-  version: 2,
+  version: 3,
   levels: [
     { id: "express", label: "Express" },
-    { id: "basico", label: "Básico" },
+    { id: "basico", label: "Essencial" },
     { id: "intermediario", label: "Intermediário" },
     { id: "exclusivo", label: "Exclusivo" },
   ],

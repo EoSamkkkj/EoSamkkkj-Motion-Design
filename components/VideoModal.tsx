@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { parseVideo, videoPlayerEmbed } from "@/lib/video";
@@ -16,6 +16,8 @@ interface VideoModalProps {
   onPrev?: () => void;
   onNext?: () => void;
   onClose: () => void;
+  /** texto embaixo do vídeo (ex.: "Esse é o tipo de resultado…") */
+  footer?: ReactNode;
 }
 
 export default function VideoModal({
@@ -26,6 +28,7 @@ export default function VideoModal({
   onPrev,
   onNext,
   onClose,
+  footer,
 }: VideoModalProps) {
   useEffect(() => {
     if (!video) return;
@@ -82,7 +85,7 @@ export default function VideoModal({
             className="relative flex flex-col"
             style={{
               // ocupa o máximo da tela mantendo o formato do vídeo: sem bordas pretas
-              width: `min(calc((100dvh - 9rem) * ${ratio}), calc(100vw - 2rem), 64rem)`,
+              width: `min(calc((100dvh - ${footer ? 12 : 9}rem) * ${ratio}), calc(100vw - 2rem), 64rem)`,
             }}
           >
             <div className="mb-3 flex items-center justify-between gap-3 text-white/80">
@@ -130,6 +133,10 @@ export default function VideoModal({
                 ) : null}
               </motion.div>
             </AnimatePresence>
+
+            {footer && (
+              <p className="mt-4 text-balance text-center text-sm leading-relaxed text-white/80">{footer}</p>
+            )}
 
             {many && (
               <>

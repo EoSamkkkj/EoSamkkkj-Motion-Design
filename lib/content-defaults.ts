@@ -1,4 +1,4 @@
-import type { SiteContent } from "./content-types";
+import type { PortfolioVideo, PricePlan, SiteContent } from "./content-types";
 
 // Conteúdo inicial do site. É usado enquanto nada foi publicado pelo
 // painel (ou se o armazenamento estiver indisponível). Depois da primeira
@@ -6,9 +6,38 @@ import type { SiteContent } from "./content-types";
 
 const vimeo = (id: string) => `https://vimeo.com/${id}`;
 
+// Motion Express — também usado por lib/content.ts para atualizar um
+// conteúdo já publicado pelo painel antes deste pacote existir.
+export const expressVideos: PortfolioVideo[] = [
+  { id: "x1", level: "express", category: "Motion Design", videoUrl: vimeo("1242439097") },
+  { id: "x2", level: "express", category: "Motion Design", videoUrl: vimeo("1242439095") },
+  { id: "x3", level: "express", category: "Motion Design", videoUrl: vimeo("1242439096") },
+  { id: "x4", level: "express", category: "Motion Design", videoUrl: vimeo("1242479016") },
+];
+
+export const expressPlan: PricePlan = {
+  id: "express",
+  name: "Motion Express",
+  price: "A partir de R$120",
+  duration: "Até 20 segundos",
+  description:
+    "Motion design dinâmico, transições suaves, efeitos sonoros, edição e finalização.",
+  narration:
+    "R$120 com a sua narração pronta · R$150 com narração digital feita por mim a partir do roteiro aprovado.",
+  deadline: "Até 3 horas",
+  revisions: "1 alteração pontual",
+  ctaLabel: "Escolher Express",
+  message:
+    "Olá, Sam! Vi seu portfólio e tenho interesse no Motion Express, a partir de R$120. Gostaria de conversar sobre meu projeto.",
+  note:
+    "Entrega conforme disponibilidade. O prazo começa após o recebimento dos materiais, a aprovação do roteiro e a confirmação da disponibilidade. Criação de roteiro do zero não inclusa (orçada à parte).",
+  examplesLevel: "express",
+};
+
 export const defaultContent: SiteContent = {
-  version: 1,
+  version: 2,
   levels: [
+    { id: "express", label: "Express" },
     { id: "basico", label: "Básico" },
     { id: "intermediario", label: "Intermediário" },
     { id: "exclusivo", label: "Exclusivo" },
@@ -23,25 +52,29 @@ export const defaultContent: SiteContent = {
     { id: "v7", level: "basico", category: "Motion Design", videoUrl: vimeo("1229563896") },
     { id: "v8", level: "basico", category: "Animação", videoUrl: vimeo("1229564190") },
     { id: "v9", level: "intermediario", category: "Motion Design", videoUrl: vimeo("1230378323") },
+    ...expressVideos,
   ],
   plans: [
+    expressPlan,
     {
       id: "basico",
-      name: "Básico",
+      examplesLevel: "basico",
+      name: "Motion Essencial",
       price: "R$250",
       duration: "Até 30 segundos",
       description: "Motion simples, animações e transições básicas.",
       narration: "Narração IA Essencial: + R$60–80",
       deadline: "Até 3 dias",
       revisions: "1 alteração",
-      ctaLabel: "Escolher Básico",
+      ctaLabel: "Escolher Essencial",
       message:
-        "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Básico de R$250. Gostaria de conversar sobre meu projeto.",
+        "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Motion Essencial de R$250. Gostaria de conversar sobre meu projeto.",
     },
     {
       id: "intermediario",
-      name: "Intermediário",
-      price: "R$350–450",
+      examplesLevel: "intermediario",
+      name: "Motion Intermediário",
+      price: "A partir de R$350",
       duration: "Até 30 segundos",
       description:
         "Motion mais elaborado, cenas personalizadas e animações mais trabalhadas.",
@@ -51,14 +84,15 @@ export const defaultContent: SiteContent = {
       revisions: "1 alteração",
       ctaLabel: "Escolher Intermediário",
       message:
-        "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Intermediário de R$350 a R$450. Gostaria de conversar sobre meu projeto.",
+        "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Motion Intermediário, a partir de R$350. Gostaria de conversar sobre meu projeto.",
       highlight: true,
       badge: "Mais escolhido",
     },
     {
       id: "exclusivo",
-      name: "Exclusivo",
-      price: "R$750",
+      examplesLevel: "exclusivo",
+      name: "Motion Exclusivo",
+      price: "A partir de R$750",
       duration: "Até 1 minuto",
       description:
         "Motion Design completo, maior personalização e acabamento premium.",
@@ -68,7 +102,7 @@ export const defaultContent: SiteContent = {
       revisions: "2 alterações",
       ctaLabel: "Escolher Exclusivo",
       message:
-        "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Exclusivo de R$750. Gostaria de conversar sobre meu projeto.",
+        "Olá, Sam! Vi seu portfólio e tenho interesse no pacote Motion Exclusivo, a partir de R$750. Gostaria de conversar sobre meu projeto.",
     },
   ],
   faq: [

@@ -1,7 +1,7 @@
 import "server-only";
 import { del, list, put } from "@vercel/blob";
 import { revalidateTag, unstable_cache } from "next/cache";
-import { defaultContent } from "./content-defaults";
+import { defaultContent, expressPlan, expressVideos } from "./content-defaults";
 import type {
   FaqItem,
   PortfolioLevel,
@@ -24,9 +24,60 @@ const str = (v: unknown, max = 2000) =>
 
 const optStr = (v: unknown, max = 2000) => str(v, max) || undefined;
 
+// Nomes e preços da versão 1, para saber o que o Sam ainda não mexeu.
+const V1_RENAMES: Record<string, Record<string, [string, string]>> = {
+  basico: {
+    name: ["Básico", "Motion Essencial"],
+    ctaLabel: ["Escolher Básico", "Escolher Essencial"],
+  },
+  intermediario: {
+    name: ["Intermediário", "Motion Intermediário"],
+    price: ["R$350–450", "A partir de R$350"],
+  },
+  exclusivo: {
+    name: ["Exclusivo", "Motion Exclusivo"],
+    price: ["R$750", "A partir de R$750"],
+  },
+};
+
+/**
+ * Conteúdo salvo pelo painel antes da versão 2 (sem o Motion Express):
+ * acrescenta o pacote e seus vídeos e renomeia os pacotes antigos — só os
+ * campos que ainda estão com o texto original, para não desfazer edições.
+ */
+function upgradeFromV1(r: Record<string, unknown>): Record<string, unknown> {
+  if (r.version === 2) return r;
+  const arr = (v: unknown) => (Array.isArray(v) ? (v as Record<string, unknown>[]) : []);
+  const levels = arr(r.levels);
+  const videos = arr(r.videos);
+  const plans = arr(r.plans).map((p) => {
+    const renames = V1_RENAMES[String(p?.id)];
+    if (!renames) return p;
+    const next: Record<string, unknown> = { ...p, examplesLevel: p.examplesLevel ?? p.id };
+    for (const [field, [from, to]] of Object.entries(renames)) {
+      if (next[field] === from) next[field] = to;
+    }
+    // a mensagem padrão citava o nome e o preço antigos
+    if (typeof next.message === "string" && next.message.startsWith("Olá, Sam! Vi seu portfólio e tenho interesse no pacote")) {
+      next.message = "";
+    }
+    return next;
+  });
+
+  return {
+    ...r,
+    version: 2,
+    levels: levels.some((l) => l?.id === "express")
+      ? levels
+      : [{ id: "express", label: "Express" }, ...levels],
+    videos: [...videos, ...expressVideos.filter((x) => !videos.some((v) => v?.id === x.id))],
+    plans: plans.some((p) => p?.id === "express") ? plans : [expressPlan, ...plans],
+  };
+}
+
 /** Garante o formato esperado e descarta qualquer campo estranho. */
 export function normalizeContent(raw: unknown): SiteContent {
-  const r = (raw ?? {}) as Record<string, unknown>;
+  const r = upgradeFromV1((raw ?? {}) as Record<string, unknown>);
   const arr = (v: unknown) => (Array.isArray(v) ? v : []);
 
   const levels: PortfolioLevel[] = arr(r.levels)
@@ -59,6 +110,8 @@ export function normalizeContent(raw: unknown): SiteContent {
       message: str(p?.message, 1000),
       highlight: p?.highlight === true || undefined,
       badge: optStr(p?.badge, 40),
+      note: optStr(p?.note, 600),
+      examplesLevel: optStr(p?.examplesLevel, 60),
     }))
     .filter((p) => p.id && p.name);
 
@@ -67,7 +120,7 @@ export function normalizeContent(raw: unknown): SiteContent {
     .filter((f) => f.question && f.answer);
 
   return {
-    version: 1,
+    version: 2,
     levels: levels.length ? levels : defaultContent.levels,
     videos,
     plans,
@@ -99,7 +152,8 @@ export async function getContentFresh(): Promise<SiteContent> {
 }
 
 /** Versão em cache para o site público; renovada a cada publicação. */
-export const getContent = unstable_cache(getContentFresh, [TAG], { tags: [TAG] });
+// a versão na chave faz um deploy com formato novo não reaproveitar o cache antigo
+export const getContent = unstable_cache(getContentFresh, [TAG, "v2"], { tags: [TAG] });
 
 export async function saveContent(content: SiteContent): Promise<SiteContent> {
   if (!storageEnabled()) {

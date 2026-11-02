@@ -10,7 +10,10 @@ export function createWhatsAppLink(phone: string, message: string): string {
 
 /** Mensagem padrão de um pacote, quando o painel deixa o campo vazio. */
 export function planMessage(name: string, price: string): string {
-  return `Olá, Sam! Vi seu portfólio e tenho interesse no pacote ${name}${price ? ` de ${price}` : ""}. Gostaria de conversar sobre meu projeto.`;
+  // "A partir de R$350" → "…pacote X, a partir de R$350."
+  const from = /^a partir de\s+/i.test(price);
+  const suffix = !price ? "" : from ? `, ${price.charAt(0).toLowerCase()}${price.slice(1)}` : ` de ${price}`;
+  return `Olá, Sam! Vi seu portfólio e tenho interesse no pacote ${name}${suffix}. Gostaria de conversar sobre meu projeto.`;
 }
 
 /**

@@ -8,15 +8,16 @@ import RevealText from "@/components/RevealText";
 import SectionReveal from "@/components/SectionReveal";
 import BackgroundLoop from "@/components/BackgroundLoop";
 import MovingBackdrop from "@/components/MovingBackdrop";
-import type { FaqItem, PricePlan } from "@/lib/content-types";
+import type { FaqItem, PortfolioVideo, PricePlan } from "@/lib/content-types";
 import { createWhatsAppLinkDefault, whatsappMessages } from "@/lib/whatsapp";
 
 interface PrecosSectionProps {
   plans: PricePlan[];
   faq: FaqItem[];
+  videos: PortfolioVideo[];
 }
 
-export default function PrecosSection({ plans, faq }: PrecosSectionProps) {
+export default function PrecosSection({ plans, faq, videos }: PrecosSectionProps) {
   return (
     <SectionReveal id="precos">
       <div className="relative px-6 pb-12 pt-20 sm:px-8 sm:pt-28 lg:px-12">
@@ -39,9 +40,17 @@ export default function PrecosSection({ plans, faq }: PrecosSectionProps) {
       <div className="mx-auto max-w-content px-6 pb-20 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
           {plans.map((plan, i) => (
-            <PriceCard key={plan.id} plan={plan} delay={i * 0.08} />
+            <PriceCard
+              key={plan.id}
+              plan={plan}
+              index={i}
+              examples={plan.examplesLevel ? videos.filter((v) => v.level === plan.examplesLevel) : []}
+            />
           ))}
-          <ProposalCard delay={plans.length * 0.08} />
+          {/* com 4 pacotes, o "Personalizado" vai para a linha de baixo, centralizado */}
+          <div className={plans.length % 4 === 0 ? "sm:col-span-2 xl:col-start-2" : undefined}>
+            <ProposalCard delay={plans.length * 0.09} />
+          </div>
         </div>
       </div>
 

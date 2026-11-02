@@ -46,6 +46,10 @@ export interface PricePlan {
   message: string;
   highlight?: boolean;
   badge?: string;
+  /** observação em letra pequena no fim do card (condições, o que não inclui) */
+  note?: string;
+  /** id de uma PortfolioLevel cujos vídeos aparecem em "Ver exemplos" */
+  examplesLevel?: string;
 }
 
 export interface FaqItem {
@@ -54,7 +58,7 @@ export interface FaqItem {
 }
 
 export interface SiteContent {
-  version: 1;
+  version: 2;
   levels: PortfolioLevel[];
   videos: PortfolioVideo[];
   plans: PricePlan[];

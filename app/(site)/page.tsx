@@ -19,7 +19,7 @@ export default async function OnePagePage() {
       />
       <ProjetosSection levels={content.levels} videos={videos} />
       <SobreSection />
-      <PrecosSection plans={content.plans} faq={content.faq} />
+      <PrecosSection plans={content.plans} faq={content.faq} videos={videos} />
     </>
   );
 }

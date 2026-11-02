@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { animate } from "motion/react";
 import {
   durationOptions,
   motionLevelOptions,
@@ -11,6 +12,15 @@ import {
 import { buildCustomProjectMessage, createWhatsAppLinkDefault } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 import MagneticButton from "./MagneticButton";
+
+/**
+ * Bounce de seleção: aperta (0.97), passa um pouco (1.025) e assenta em 1.
+ * Só escala — cor, borda e o valor escolhido continuam iguais.
+ */
+function pillBounce(el: HTMLElement) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  animate(el, { scale: [1, 0.97, 1.025, 1] }, { duration: 0.32, times: [0, 0.3, 0.65, 1], ease: "easeOut" });
+}
 
 function PillGroup({
   label,
@@ -36,7 +46,10 @@ function PillGroup({
               key={opt}
               type="button"
               aria-pressed={active}
-              onClick={() => onChange(opt)}
+              onClick={(e) => {
+                pillBounce(e.currentTarget);
+                onChange(opt);
+              }}
               className={cn(
                 "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
                 active

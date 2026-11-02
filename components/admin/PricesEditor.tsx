@@ -113,6 +113,19 @@ export default function PricesEditor({ content, onChange }: Props) {
                 <Field label="Narração / extra (opcional)" className="sm:col-span-2 lg:col-span-3">
                   <textarea rows={2} value={plan.narration ?? ""} onChange={(e) => update(plan.id, { narration: e.target.value })} className={inputClass} />
                 </Field>
+                <Field label="Observação (opcional)" className="sm:col-span-2 lg:col-span-3" hint="Letra pequena no fim do card: condições, o que não está incluso.">
+                  <textarea rows={2} value={plan.note ?? ""} onChange={(e) => update(plan.id, { note: e.target.value })} className={inputClass} />
+                </Field>
+                <Field label="Ver exemplos" hint="Os vídeos dessa seção do portfólio abrem no botão “Ver exemplos”.">
+                  <select value={plan.examplesLevel ?? ""} onChange={(e) => update(plan.id, { examplesLevel: e.target.value || undefined })} className={inputClass}>
+                    <option value="">Não mostrar</option>
+                    {content.levels.map((l) => (
+                      <option key={l.id} value={l.id}>
+                        {l.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
                 <Field label="Texto do botão">
                   <input value={plan.ctaLabel} onChange={(e) => update(plan.id, { ctaLabel: e.target.value })} placeholder={`Escolher ${plan.name}`} className={inputClass} />
                 </Field>

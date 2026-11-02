@@ -1,12 +1,25 @@
 import { Check } from "lucide-react";
 import { createWhatsAppLinkDefault, planMessage } from "@/lib/whatsapp";
-import type { PricePlan } from "@/lib/content-types";
+import type { PortfolioVideo, PricePlan } from "@/lib/content-types";
 import { cn } from "@/lib/utils";
 import WhatsAppCTA from "./WhatsAppCTA";
-import RevealText from "./RevealText";
+import PlanReveal from "./PlanReveal";
+import PlanExamples from "./PlanExamples";
 import Tilt from "./Tilt";
 
-export default function PriceCard({ plan, delay = 0 }: { plan: PricePlan; delay?: number }) {
+export default function PriceCard({
+  plan,
+  index = 0,
+  examples = [],
+}: {
+  plan: PricePlan;
+  index?: number;
+  /** vídeos de "Ver exemplos" (seção do portfólio escolhida no painel) */
+  examples?: PortfolioVideo[];
+}) {
+  // "A partir de R$350": o "a partir de" fica pequeno, na mesma linha do valor
+  const from = plan.price.match(/^(a partir de)\s+(.*)$/i);
+
   const rows = [
     { label: "Duração", value: plan.duration, shine: true },
     { label: "Prazo", value: plan.deadline, shine: true },
@@ -14,7 +27,7 @@ export default function PriceCard({ plan, delay = 0 }: { plan: PricePlan; delay?
   ].filter((row) => row.value);
 
   return (
-    <RevealText delay={delay} className={cn("h-full", plan.highlight && "xl:-translate-y-3")}>
+    <PlanReveal index={index} className={cn("h-full", plan.highlight && "xl:-translate-y-3")}>
       <Tilt max={7} className="h-full rounded-3xl">
         <div
           className={cn(
@@ -33,7 +46,21 @@ export default function PriceCard({ plan, delay = 0 }: { plan: PricePlan; delay?
           <div>
             <h3 className="font-display text-2xl font-semibold tracking-tight">{plan.name}</h3>
             <p className="mt-2 font-display text-4xl font-semibold tracking-tight">
-              {plan.price}
+              {from ? (
+                <>
+                  <span
+                    className={cn(
+                      "mr-1.5 font-sans text-sm font-medium tracking-normal",
+                      plan.highlight ? "text-white/60" : "text-steel"
+                    )}
+                  >
+                    {from[1]}
+                  </span>
+                  {from[2]}
+                </>
+              ) : (
+                plan.price
+              )}
             </p>
           </div>
 
@@ -64,7 +91,14 @@ export default function PriceCard({ plan, delay = 0 }: { plan: PricePlan; delay?
             </div>
           )}
 
-          <div className="mt-auto pt-2">
+          {plan.note && (
+            <p className={cn("text-xs leading-relaxed", plan.highlight ? "text-white/60" : "text-steel")}>
+              {plan.note}
+            </p>
+          )}
+
+          <div className="mt-auto flex flex-col gap-4 pt-2">
+            <PlanExamples planName={plan.name} price={plan.price} videos={examples} dark={plan.highlight} />
             <WhatsAppCTA
               href={createWhatsAppLinkDefault(plan.message || planMessage(plan.name, plan.price))}
               variant={plan.highlight ? "solid" : "outline"}
@@ -75,6 +109,6 @@ export default function PriceCard({ plan, delay = 0 }: { plan: PricePlan; delay?
           </div>
         </div>
       </Tilt>
-    </RevealText>
+    </PlanReveal>
   );
 }

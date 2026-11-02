@@ -33,16 +33,16 @@ export default function ProjetosSection({ levels, videos }: ProjetosSectionProps
       </div>
 
       <div className="mx-auto max-w-content px-6 pb-16 sm:px-8 lg:px-12">
-        <ProjectsExplorer levels={levels} videos={videos} />
-
-        <RevealText
-          as="p"
-          className="mt-10 max-w-2xl text-sm leading-relaxed text-steel"
-        >
-          Os trabalhos apresentados representam diferentes níveis de produção.
-          Cada projeto é desenvolvido de acordo com sua proposta, duração e
-          complexidade.
-        </RevealText>
+        <ProjectsExplorer levels={levels} videos={videos}>
+          <RevealText
+            as="p"
+            className="mt-10 max-w-2xl text-sm leading-relaxed text-steel"
+          >
+            Os trabalhos apresentados representam diferentes níveis de produção.
+            Cada projeto é desenvolvido de acordo com sua proposta, duração e
+            complexidade.
+          </RevealText>
+        </ProjectsExplorer>
       </div>
 
       <div className="relative overflow-hidden border-t border-ink/10 bg-green-mist">
